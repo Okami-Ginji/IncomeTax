@@ -139,16 +139,10 @@ public class IncomeTaxDAO {
             ArrayList<Double> listArr = new ArrayList<>();          
             double calculatorChildren = calculatorChildren(x.getDependents());
             double taxincome = x.getTotalIncome() - 11000000 - calculatorChildren;           
-            if(x.getTotalIncome() >= 4000000) {
+            if(x.getTotalIncome() > 4000000) {
                 taxincome -= deductionParent;
             }
-            if(taxincome > 2000000) {
-                int t = 5 + (int)(taxincome/1000000) - 2;
-                taxincome = (double) taxincome * t /100;
-            }
-            else {
-                taxincome = (double) taxincome * 5 /100;
-            }
+            taxincome = calculatorTax(taxincome);
             listArr.add(x.getTotalIncome());
             listArr.add(11000000.0);
             listArr.add(calculatorChildren);
@@ -161,22 +155,32 @@ public class IncomeTaxDAO {
         return listTax;
     }
     
+    public double calculatorTax(double taxincome) {
+        if(taxincome < 4000000) {
+            return (double) taxincome * 5/100;
+        }
+        else if (taxincome >= 4000000 && taxincome <= 6000000) {
+            return (double) taxincome * 8/100;
+        }
+        else if (taxincome > 6000000 && taxincome <= 10000000) {
+            return (double) taxincome * 10/100;
+        }
+        else if (taxincome <= 0) {
+            return 0;
+        }
+        else
+            return (double) taxincome * 20/100;
+    }
+    
     public int calculatorParent(ArrayList<Parent> listParent) {
-        int parentCount = listParent.size();      
-        if (parentCount >= 2) {
-            for(Parent parent : listParent) {
-                if(parent.getAge() <= 60) {
-                    return 0;
-                }
-            }
-            return 4400000;
-        }
-        else if(parentCount == 1) {
-            if(listParent.get(0).getGender() == 2 && listParent.get(0).getAge() > 55) {
-                return 4400000;
+        int parentCount = listParent.size(); 
+        int sum = 0;
+        for(Parent parent : listParent) {
+            if((parent.getAge() > 60) || (parent.getGender() == 2 && parent.getAge() > 55)) {
+                sum += 4400000;
             }
         }
-        return 0;
+        return sum;
     }
         
     public int calculatorChildren(ArrayList<Children> list) {
