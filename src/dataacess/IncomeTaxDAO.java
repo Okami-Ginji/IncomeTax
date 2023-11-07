@@ -148,7 +148,6 @@ public class IncomeTaxDAO {
             listArr.add(calculatorChildren);
             listArr.add(deductionParent);
             listArr.add(taxincome);
-            
             listTax.put(count, listArr);
             count++;
         }
@@ -156,6 +155,9 @@ public class IncomeTaxDAO {
     }
     
     public double calculatorTax(double taxincome) {
+        if (taxincome <= 0) {
+            return 0;
+        }
         if(taxincome < 4000000) {
             return (double) taxincome * 5/100;
         }
@@ -164,9 +166,6 @@ public class IncomeTaxDAO {
         }
         else if (taxincome > 6000000 && taxincome <= 10000000) {
             return (double) taxincome * 10/100;
-        }
-        else if (taxincome <= 0) {
-            return 0;
         }
         else
             return (double) taxincome * 20/100;
